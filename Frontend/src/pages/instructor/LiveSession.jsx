@@ -10,8 +10,8 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import './LiveSession.css';
 
-const SOCKET_SERVER_URL = "http://localhost:5000";
-const API_URL = "http://localhost:5000/api";
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api`;
 
 const InstructorLiveSession = () => {
     const { user } = useUser();
