@@ -2,11 +2,11 @@ const User = require('../../models/User');
 
 const getPendingInstructors = async (req, res) => {
   try {
-    const instructors = await User.find({ 
-      role: 'instructor', 
-      isVerified: false 
-    }).select('-password');
-    
+    const instructors = await User.find({
+      role: 'instructor',
+      isVerified: false
+    }).select('-password').lean();
+
     res.json(instructors);
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -17,7 +17,7 @@ const verifyInstructor = async (req, res) => {
   try {
     const { instructorId } = req.params;
     const { action } = req.body; // 'approve' or 'reject'
-    
+
     if (action === 'approve') {
       await User.findByIdAndUpdate(instructorId, { isVerified: true });
       res.json({ msg: 'Instructor approved successfully' });
@@ -37,7 +37,7 @@ const getDashboardStats = async (req, res) => {
     const totalStudents = await User.countDocuments({ role: 'student' });
     const totalInstructors = await User.countDocuments({ role: 'instructor', isVerified: true });
     const pendingVerifications = await User.countDocuments({ role: 'instructor', isVerified: false });
-    
+
     res.json({
       totalStudents,
       totalInstructors,
@@ -48,4 +48,29 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-module.exports = { getPendingInstructors, verifyInstructor, getDashboardStats };
+const getAllInstructors = async (req, res) => {
+  try {
+    const instructors = await User.find({ role: 'instructor', isVerified: true }).select('-password').lean();
+    res.json(instructors);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+const deleteInstructor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await User.findByIdAndDelete(id);
+    res.json({ msg: 'Instructor removed successfully' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+module.exports = {
+  getPendingInstructors,
+  verifyInstructor,
+  getDashboardStats,
+  getAllInstructors,
+  deleteInstructor
+};

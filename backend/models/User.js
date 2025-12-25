@@ -62,6 +62,8 @@ const userSchema = new Schema({
         type: String // Path to uploaded file
     },
 
+
+
     github: {
         type: String
     },
@@ -89,7 +91,13 @@ const userSchema = new Schema({
 
 }, {
     timestamps: true
-})
+});
+
+// Indexes for performance optimization
+userSchema.index({ role: 1 });
+userSchema.index({ role: 1, isVerified: 1 });
+userSchema.index({ domains: 1 });
+userSchema.index({ statusForSession: 1 });
 
 
 

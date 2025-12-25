@@ -62,14 +62,14 @@ const AdminDashboard = () => {
                     </div>
                 </Card>
 
-                <Card className="metric-card">
+                <Card className="metric-card" onClick={() => navigate('/admin/instructors')} style={{ cursor: 'pointer' }}>
                     <div className="metric-icon bg-green-subtle">
                         <Shield className="text-secondary" style={{ color: 'var(--success-mint)' }} size={24} />
                     </div>
                     <div className="metric-content">
                         <span className="metric-label">Verified Instructors</span>
                         <span className="metric-value">{loading ? '...' : stats.totalInstructors}</span>
-                        <span className="metric-trend positive">Experts</span>
+                        <span className="metric-trend positive">Manage &rarr;</span>
                     </div>
                 </Card>
 

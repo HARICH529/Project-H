@@ -91,9 +91,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             await registerUser(payload);
 
             sessionStorage.setItem('showWelcome', 'register');
+            window.dispatchEvent(new Event('trigger-welcome-animation'));
             onClose(); // Close modal
-            onSwitchToLogin();
-            showAlert("Registration successful! Please login.", "success");
+
+            // Delay opening login modal to allow animation to play first "Welcome to Clarify"
+            setTimeout(() => {
+                onSwitchToLogin();
+            }, 3500);
 
         } catch (err) {
             console.error("Registration Error Details:", err.response?.data || err.message);

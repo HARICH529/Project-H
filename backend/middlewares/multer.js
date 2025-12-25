@@ -1,17 +1,20 @@
-const multer=require('multer');
+const multer = require('multer');
+const path = require('path');
 
-const storage=multer.diskStorage(
+const storage = multer.diskStorage(
     {
-        destination:function(req,file,cb){
-            cb(null,'./public/temp')
+        destination: function (req, file, cb) {
+            cb(null, './public/temp')
         },
-        filename:function(req,file,cb){
-            const suffix=Date.now();
-            cb(null,file.originalname+'-'+suffix);
+        filename: function (req, file, cb) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const ext = path.extname(file.originalname);
+            const name = path.basename(file.originalname, ext);
+            cb(null, name + '-' + uniqueSuffix + ext);
         }
     }
 )
 
-const upload=multer({storage:storage});
+const upload = multer({ storage: storage });
 
-module.exports=upload;
+module.exports = upload;

@@ -9,6 +9,7 @@ const generateToken = (id) => {
 const register = async (req, res) => {
   try {
     const { name, email, password, role = 'student', domains, experience, bio } = req.body;
+    console.log('Register attempt:', { email, role, domains, experience, github: req.body.github, hasFile: !!req.file });
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -91,10 +92,7 @@ const login = async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
-    // Check if instructor is verified
-    if (user.role === 'instructor' && !user.isVerified) {
-      return res.status(403).json({ msg: 'Account pending admin approval' });
-    }
+
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {

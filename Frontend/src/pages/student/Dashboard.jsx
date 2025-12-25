@@ -19,6 +19,7 @@ const StudentDashboard = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isWaitModalOpen, setIsWaitModalOpen] = useState(false);
     const [upcomingSession, setUpcomingSession] = useState(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -63,7 +64,7 @@ const StudentDashboard = () => {
             const interval = setInterval(fetchDashboardData, 30000);
             return () => clearInterval(interval);
         }
-    }, [user]);
+    }, [user, refreshTrigger]);
 
     // Derive stats from user and recentDoubts to ensure reactivity
     const stats = [
@@ -100,17 +101,15 @@ const StudentDashboard = () => {
 
             socket.on('end-session', (data) => {
                 console.log("Session ended:", data);
-                // Refresh dashboard to remove the completed session
-                // Or optimistically remove it
+                // Optimistically remove session
                 setUpcomingSession(prev => {
                     if (prev && prev._id === data.roomId) {
                         return null;
                     }
                     return prev;
                 });
-                // Also trigger a fetch to be sure
-                // fetchDashboardData(); // Cannot call directly easily due to scope, but polling will catch it or we could move fetchDashboardData out.
-                // For now, optimistic update is good enough + polling.
+                // Trigger immediate data refresh
+                setRefreshTrigger(prev => prev + 1);
             });
         });
 

@@ -32,6 +32,7 @@ import InstructorCreatePost from './pages/instructor/CreatePost';
 import AdminDashboard from './pages/admin/Dashboard';
 import Verification from './pages/admin/Verification';
 import Moderation from './pages/admin/Moderation';
+import ManageInstructors from './pages/admin/ManageInstructors';
 const AppLayout = ({ role }) => {
   return (
     <>
@@ -97,6 +98,7 @@ function App() {
                 <Route path="/admin" element={<AppLayout role="admin" />}>
                   <Route index element={<AdminDashboard />} />
                   <Route path="verification" element={<Verification />} />
+                  <Route path="instructors" element={<ManageInstructors />} />
                   <Route path="moderation" element={<Moderation />} />
                 </Route>
               </Routes>

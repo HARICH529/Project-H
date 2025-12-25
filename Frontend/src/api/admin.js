@@ -17,6 +17,16 @@ export const verifyInstructor = async (instructorId, action) => {
     return response.data;
 };
 
+export const getAllInstructors = async () => {
+    const response = await api.get('/admin/instructors');
+    return response.data;
+};
+
+export const deleteInstructor = async (id) => {
+    const response = await api.delete(`/admin/instructor/${id}`);
+    return response.data;
+};
+
 // Moderation APIs not yet implemented in backend
 export const getFlaggedContent = async () => {
     // const response = await api.get('/admin/moderation');

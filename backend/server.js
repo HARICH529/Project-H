@@ -18,6 +18,8 @@ const io = new Server(server, {
   }
 });
 
+app.set('io', io);
+
 // Track live sessions in memory
 const liveSessions = new Set();
 // Track Room Timers: { roomId: { accumulated: 0, lastResume: null, participants: Set } }

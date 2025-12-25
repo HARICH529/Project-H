@@ -18,7 +18,8 @@ const getInstructorsByDomain = async (req, res) => {
 
     const instructors = await User.find(filter)
       .select('name domains rating totalRatings statusForSession')
-      .sort({ rating: -1 });
+      .sort({ rating: -1 })
+      .lean();
 
     res.json(instructors);
   } catch (error) {
@@ -33,6 +34,17 @@ const updateInstructorStatus = async (req, res) => {
 
     const normalizedStatus = statusForSession.toLowerCase();
     await User.findByIdAndUpdate(req.user._id, { statusForSession: normalizedStatus });
+
+    // Emit real-time update
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('instructor-status-change', {
+        instructorId: req.user._id,
+        status: normalizedStatus,
+        name: req.user.name
+      });
+    }
+
     res.json({ msg: 'Status updated successfully', status: normalizedStatus });
   } catch (error) {
     res.status(500).json({ msg: error.message });

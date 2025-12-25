@@ -702,6 +702,12 @@ const LiveSession = () => {
         setInputText('');
     };
 
+    const formatTime = (totalSeconds) => {
+        const minutes = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
     return (
         <div className="session-container" ref={containerRef}>
             {/* Main Video Area */}

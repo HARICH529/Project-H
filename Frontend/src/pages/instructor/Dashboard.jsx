@@ -48,9 +48,37 @@ const InstructorDashboard = () => {
     // Initial fetch
     useEffect(() => {
         fetchDashboardData();
-        // Poll for new requests every 30 seconds
+
+        // Socket connection for real-time updates
+        let socket;
+        import('socket.io-client').then(({ io }) => {
+            socket = io('http://localhost:5000');
+
+            socket.on('connect', () => {
+                // Join a room specific to this instructor to receive updates
+                // Assuming backend emits to user:ID room or similar
+                // For now, we can just listen for global events if relevant or room specific
+            });
+
+            // Listen for session end to refresh stats
+            socket.on('end-session', () => {
+                console.log("Session ended event received. Refreshing dashboard...");
+                fetchDashboardData();
+            });
+
+            // Listen for new requests (if backend emits 'new-request')
+            socket.on('new-notification', () => {
+                fetchDashboardData();
+            });
+        });
+
+        // Poll for new requests every 30 seconds as backup
         const interval = setInterval(fetchDashboardData, 30000);
-        return () => clearInterval(interval);
+
+        return () => {
+            clearInterval(interval);
+            if (socket) socket.disconnect();
+        };
     }, []);
 
     const toggleStatus = async () => {

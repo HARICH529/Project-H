@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import Input from '../ui/Input';
 import { User, BookOpen } from 'lucide-react';
 import { useAlert } from '../../context/AlertContext';
+import { io } from 'socket.io-client';
 import './RequestSessionModal.css';
 
 const CS_SUBJECTS = [
@@ -42,7 +43,40 @@ const RequestSessionModal = ({ isOpen, onClose, doubt }) => {
         }
     }, [isOpen, doubt]);
 
-    // Fetch instructors when subject changes
+
+
+    // ...
+
+    // Socket.io for Real-time Updates
+    useEffect(() => {
+        const socket = io('http://localhost:5000'); // Make sure this matches backend port
+
+        socket.on('instructor-status-change', ({ instructorId, status, name, domain }) => {
+            // If the modal is open and a subject is selected, re-fetch the list
+            // We can optimize this by checking if the instructor's domain matches selectedSubject
+            // But strict checking might miss if domains are arrays. Re-fetching is safer.
+            if (selectedSubject) {
+                // Trigger re-fetch
+                // Since fetchInstructors is defined inside another useEffect, we can't call it directly easily
+                // unless we move it out or use a trigger state.
+                // Alternative: Just duplicate the fetch call or rely on a dependency change?
+                // Dependency change: `availableInstructors` is local.
+
+                // Let's copy the fetch logic here for simplicity or define it outside.
+                // Better: Define fetchInstructors outside the useEffect or use a callback.
+
+                // Quick fix: Set a timestamp trigger
+                setRefreshTrigger(Date.now());
+            }
+        });
+
+        return () => socket.disconnect();
+    }, [selectedSubject]);
+
+    // Add refreshTrigger state
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    // Fetch instructors when subject changes OR trigger updates
     useEffect(() => {
         const fetchInstructors = async () => {
             if (!selectedSubject) {
@@ -53,9 +87,6 @@ const RequestSessionModal = ({ isOpen, onClose, doubt }) => {
             setLoadingInstructors(true);
             try {
                 const data = await getInstructors(selectedSubject);
-                // Adjust based on API structure. Assuming data is array of users
-                // Filter client side if API doesn't fully filter "active" status
-                // For now assuming API returns relevant list
                 setAvailableInstructors(Array.isArray(data) ? data : (data.instructors || []));
             } catch (err) {
                 console.error("Failed to fetch instructors:", err);
@@ -65,7 +96,7 @@ const RequestSessionModal = ({ isOpen, onClose, doubt }) => {
         };
 
         fetchInstructors();
-    }, [selectedSubject]);
+    }, [selectedSubject, refreshTrigger]);
 
     const handleSubmit = async () => {
         if (!selectedInstructorId) return;

@@ -7,11 +7,22 @@ const WelcomeManager = () => {
     const [welcomeType, setWelcomeType] = useState(null);
 
     useEffect(() => {
-        // Check for the flag on every location change
-        const type = sessionStorage.getItem('showWelcome');
-        if (type) {
-            setWelcomeType(type);
-        }
+        const checkWelcome = () => {
+            const type = sessionStorage.getItem('showWelcome');
+            if (type) {
+                setWelcomeType(type);
+            }
+        };
+
+        // Check on mount and location change
+        checkWelcome();
+
+        // Listen for custom event (for same-page updates)
+        window.addEventListener('trigger-welcome-animation', checkWelcome);
+
+        return () => {
+            window.removeEventListener('trigger-welcome-animation', checkWelcome);
+        };
     }, [location]);
 
     const handleAnimationComplete = () => {
