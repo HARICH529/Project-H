@@ -1,0 +1,27 @@
+import api from './client';
+
+export const loginUser = async (email, password) => {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
+};
+
+export const registerUser = async (userData) => {
+    // If userData is FormData, axios automatically sets Content-Type: multipart/form-data
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+};
+
+export const logoutUser = async () => {
+    // Optional: call backend to invalidate token if blacklist is used
+    // await api.post('/auth/logout');
+    localStorage.removeItem('token');
+};
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await api.get('/auth/me');
+        return response.data;
+    } catch (err) {
+        return null;
+    }
+};
