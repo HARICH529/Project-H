@@ -29,6 +29,13 @@ const InstructorLiveSession = () => {
 
 
     const [mediaError, setMediaError] = useState(null);
+    const [socketStatus, setSocketStatus] = useState('Disconnected');
+    const [debugInfo, setDebugInfo] = useState([]);
+
+    const logDebug = (msg) => {
+        console.log(msg);
+        setDebugInfo(prev => [...prev.slice(-4), msg]);
+    };
 
     // Media Refs
     const videoRef = useRef(null);
@@ -304,8 +311,19 @@ const InstructorLiveSession = () => {
 
                 // --- Socket Listeners ---
                 socketRef.current.on('connect', () => {
-                    console.log("Connected to socket server");
+                    logDebug("Socket Connected: " + socketRef.current.id);
+                    setSocketStatus('Connected');
                     socketRef.current.emit('join-room', roomId, 'instructor-' + Math.floor(Math.random() * 10000));
+                });
+
+                socketRef.current.on('connect_error', (err) => {
+                    logDebug("Socket Error: " + err.message);
+                    setSocketStatus('Error');
+                });
+
+                socketRef.current.on('disconnect', () => {
+                    logDebug("Socket Disconnected");
+                    setSocketStatus('Disconnected');
                 });
 
                 socketRef.current.on('user-connected', (userId) => {
@@ -725,6 +743,28 @@ const InstructorLiveSession = () => {
                         </div>
                         <div className="session-timer">
                             {formatTime(seconds)}
+                        </div>
+                        <div style={{
+                            position: 'absolute',
+                            top: 60,
+                            left: 20,
+                            background: 'rgba(0,0,0,0.7)',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            zIndex: 1000
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{
+                                    width: 10, height: 10, borderRadius: '50%',
+                                    backgroundColor: socketStatus === 'Connected' ? '#22c55e' : '#ef4444'
+                                }} />
+                                {socketStatus}
+                            </div>
+                            <div style={{ marginTop: 5, opacity: 0.7 }}>
+                                {debugInfo.map((msg, i) => <div key={i}>{msg}</div>)}
+                            </div>
                         </div>
                     </div>
 

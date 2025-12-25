@@ -22,6 +22,13 @@ const LiveSession = () => {
     const [isVideoOff, setIsVideoOff] = useState(() => sessionStorage.getItem('isVideoOff') === 'true');
     const [seconds, setSeconds] = useState(0);
     const [mediaError, setMediaError] = useState(null);
+    const [socketStatus, setSocketStatus] = useState('Disconnected');
+    const [debugInfo, setDebugInfo] = useState([]);
+
+    const logDebug = (msg) => {
+        console.log(msg);
+        setDebugInfo(prev => [...prev.slice(-4), msg]);
+    };
 
     // Sidebar State
     const [activeTab, setActiveTab] = useState('context');
@@ -299,7 +306,8 @@ const LiveSession = () => {
 
                 // Socket Event Listeners
                 socketRef.current.on('connect', () => {
-                    console.log("Connected to socket server");
+                    logDebug("Socket Connected");
+                    setSocketStatus('Connected');
                     socketRef.current.emit('join-room', roomId, 'user-' + Math.floor(Math.random() * 10000));
 
                     // Optimistically request offer in case Instructor is already there (Refresh scenario)
@@ -308,6 +316,16 @@ const LiveSession = () => {
                         userId: socketRef.current.id,
                         studentName: userRef.current?.name || 'Student'
                     });
+                });
+
+                socketRef.current.on('connect_error', (err) => {
+                    logDebug("Socket Error: " + err.message);
+                    setSocketStatus('Error');
+                });
+
+                socketRef.current.on('disconnect', () => {
+                    logDebug("Socket Disconnected");
+                    setSocketStatus('Disconnected');
                 });
 
                 socketRef.current.on('user-connected', async (userId) => {
@@ -720,6 +738,28 @@ const LiveSession = () => {
                         </div>
                         <div className="session-timer">
                             {formatTime(seconds)}
+                        </div>
+                        <div style={{
+                            position: 'absolute',
+                            top: 60,
+                            left: 20,
+                            background: 'rgba(0,0,0,0.7)',
+                            color: 'white',
+                            padding: '10px',
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            zIndex: 1000
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{
+                                    width: 10, height: 10, borderRadius: '50%',
+                                    backgroundColor: socketStatus === 'Connected' ? '#22c55e' : '#ef4444'
+                                }} />
+                                {socketStatus}
+                            </div>
+                            <div style={{ marginTop: 5, opacity: 0.7 }}>
+                                {debugInfo.map((msg, i) => <div key={i}>{msg}</div>)}
+                            </div>
                         </div>
                     </div>
 
