@@ -52,6 +52,7 @@ const register = async (req, res) => {
       userData.bio = bio;
       userData.github = req.body.github;
       userData.resume = req.file.path; // Store file path
+      userData.isVerified = true; // Auto-approve instructors
     }
 
     const user = await User.create(userData);
