@@ -15,7 +15,7 @@ const roadmapRoutes = require('./API/routes/roadmapRoutes');
 const app = express();
 
 // Middleware
-app.use(cors({ credentials: true, origin: ['http://localhost:5173', 'http://localhost:3000', process.env.CLIENT_URL || ''] }));
+app.use(cors({ credentials: true, origin: ['http://localhost:5173', 'https://project-h-frontend.onrender.com', process.env.CLIENT_URL || ''] }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(session({

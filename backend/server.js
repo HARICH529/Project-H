@@ -5,7 +5,7 @@ const app = require('./app');
 const connectDB = require('./db');
 
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_URL = process.env.CLIENT_URL || "https://project-h-frontend.onrender.com";
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -13,7 +13,7 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Using * for dev simplicity, in prod use CLIENT_URL
+    origin: [CLIENT_URL, "http://localhost:5173", "https://project-h-frontend.onrender.com", "*"], // Allow both local and prod
     methods: ["GET", "POST"]
   }
 });
