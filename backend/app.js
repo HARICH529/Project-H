@@ -17,6 +17,7 @@ const {MongoStore} = require('connect-mongo');
 const app = express();
 
 // Middleware
+app.set('trust proxy', 1); // Required for Render/Heroku to trust the proxy and allow secure cookies
 app.use(cors({
   credentials: true,
   origin: ['http://localhost:5173', 'https://project-h-frontend.onrender.com', process.env.CLIENT_URL].filter(Boolean)
@@ -36,7 +37,11 @@ app.use(session({
     collectionName: 'sessions',
     ttl: 24 * 60 * 60 // 1 day
   }),
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Set secure: true in production if https is enabled
+  cookie: { 
+    secure: true, // MUST be true for SameSite: 'none'
+    sameSite: 'none', // Required for cross-site (frontend != backend domain)
+    maxAge: 24 * 60 * 60 * 1000 
+  }
 }));
 
 // Routes

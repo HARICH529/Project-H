@@ -61,7 +61,8 @@ const register = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // Required for SameSite: 'none'
+      sameSite: 'none', // Required for cross-site cookie usage
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -104,7 +105,8 @@ const login = async (req, res) => {
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // Required for SameSite: 'none'
+      sameSite: 'none', // Required for cross-site cookie usage
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
@@ -138,7 +140,11 @@ const getMe = async (req, res) => {
 };
 
 const logout = (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none'
+  });
   req.session.destroy();
   res.json({ msg: 'Logged out successfully' });
 };
