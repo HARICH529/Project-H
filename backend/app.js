@@ -12,9 +12,12 @@ const instructorRoutes = require('./API/routes/instructorRoutes');
 const commentRoutes = require('./API/routes/commentRoutes');
 const roadmapRoutes = require('./API/routes/roadmapRoutes');
 
+const {MongoStore} = require('connect-mongo');
+
 const app = express();
 
 // Middleware
+app.set('trust proxy', 1); // Required for Render/Heroku to trust the proxy and allow secure cookies
 app.use(cors({
   credentials: true,
   origin: ['http://localhost:5173', 'https://project-h-frontend.onrender.com', process.env.CLIENT_URL].filter(Boolean)
@@ -25,7 +28,20 @@ app.use(session({
   secret: process.env.SESSION,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  store: MongoStore.create({
+    mongoUrl: (() => {
+      const uri = `${process.env.DB_URI}/${process.env.DB_NAME}`;
+      console.log('Initializing MongoStore with URI:', uri.replace(/\/\/.*@/, '//***@')); // Log masked URI
+      return uri;
+    })(), 
+    collectionName: 'sessions',
+    ttl: 24 * 60 * 60 // 1 day
+  }),
+  cookie: { 
+    secure: true, // MUST be true for SameSite: 'none'
+    sameSite: 'none', // Required for cross-site (frontend != backend domain)
+    maxAge: 24 * 60 * 60 * 1000 
+  }
 }));
 
 // Routes
