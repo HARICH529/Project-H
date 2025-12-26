@@ -12,16 +12,14 @@ export const registerUser = async (userData) => {
 };
 
 export const logoutUser = async () => {
-    // Optional: call backend to invalidate token if blacklist is used
-    // await api.post('/auth/logout');
-    localStorage.removeItem('token');
+    await api.post('/auth/logout');
 };
 
 export const getCurrentUser = async () => {
     try {
         const response = await api.get('/auth/me');
         return response.data;
-    } catch (err) {
-        return null;
+    } catch (error) {
+        return null; // Return null if not authenticated
     }
 };

@@ -47,7 +47,7 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         if (!user) return;
 
-        const newSocket = io(SOCKET_SERVER_URL);
+        const newSocket = io(SOCKET_SERVER_URL, { withCredentials: true });
 
         newSocket.on('connect', () => {
             console.log("Connected to notification socket");

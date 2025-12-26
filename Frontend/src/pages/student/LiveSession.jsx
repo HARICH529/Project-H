@@ -1,7 +1,9 @@
+
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import api from '../../api/client';
 import { useUser } from '../../context/UserContext';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Maximize2, Minimize2, MoreVertical, Send, Monitor, Smile, X } from 'lucide-react';
 import { useAlert } from '../../context/AlertContext';
@@ -33,10 +35,7 @@ const LiveSession = () => {
         const fetchSessionDetails = async () => {
             if (!sessionId) return;
             try {
-                const token = localStorage.getItem('token');
-                const res = await axios.get(`${API_URL}/session-requests/${sessionId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await api.get(`/session-requests/${sessionId}`);
                 setSessionDetails(res.data);
                 // Also optionally set room ID from session details if dynamic
                 // setRoomId(res.data.roomId || 'demo-room');
@@ -230,7 +229,7 @@ const LiveSession = () => {
                 setMediaError(null);
 
                 // 2. Initialize Socket Connection
-                socketRef.current = io(SOCKET_SERVER_URL);
+                socketRef.current = io(SOCKET_SERVER_URL, { withCredentials: true });
 
                 // Helper to create Peer Connection
                 const createPeerConnection = () => {

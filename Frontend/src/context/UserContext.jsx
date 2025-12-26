@@ -18,93 +18,78 @@ const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [loginStatus, setLoginStatus] = useState(false);
 
-    // Check for token on mount and fetch fresh user data
+    // Check auth status on mount (similar to checkAuthStatus in reference)
     useEffect(() => {
-        const initUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    // Try to get fresh data
-                    const freshUser = await getCurrentUser();
-                    if (freshUser) {
-                        setUser(freshUser);
-                        // Update local storage just in case
-                        localStorage.setItem('user', JSON.stringify(freshUser));
-
-                        // Join User Room
-                        const socket = io(SOCKET_SERVER_URL);
-                        socket.on('connect', () => {
-                            socket.emit('join-user-room', freshUser._id);
-                        });
-                        // We don't keep the socket in context for now as it's just for joining room
-                        // Components will open their own connections or we can lift socket to context if needed later
-                        // For notifications, Navbar will likely handle the listening part or we should have a global socket
-                        // Actually, for simplicity, let's let Navbar handle the listening, 
-                        // but joining the room needs to happen somewhere reliably. 
-                        // NOTE: Socket.io usually requires the *same* socket instance to receive events for the joined room
-                        // if we want to listen on it. 
-                        // So we should probably expose the socket or let Navbar handle both joining and listening.
-
-                        // REVISION: Let's defer socket logic to a new NotificationContext or Navbar 
-                        // to ensure the listener is on the SAME socket that joined the room.
-                        // Joining here with a throwaway socket might not work if the server expects the listener on the same socket connection.
-                        // Wait, 'join' associates the SOCKET ID with the room. If we disconnect, that association is lost.
-                        // So we must maintain the connection.
-                        socket.disconnect();
-                    } else {
-                        const localUser = localStorage.getItem('user');
-                        if (localUser) setUser(JSON.parse(localUser));
-                    }
-                } catch (e) {
-                    const localUser = localStorage.getItem('user');
-                    if (localUser) setUser(JSON.parse(localUser));
+        const checkAuthStatus = async () => {
+            try {
+                // api instance already has withCredentials: true
+                const user = await getCurrentUser(); // Hits /auth/me
+                if (user) {
+                    setUser(user);
+                    setLoginStatus(true);
+                } else {
+                    setUser(null);
+                    setLoginStatus(false);
                 }
+            } catch (err) {
+                console.log("Session check failed:", err);
+                setUser(null);
+                setLoginStatus(false);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
-        initUser();
+
+        checkAuthStatus();
     }, []);
 
     const login = async (email, password) => {
-        const data = await loginUser(email, password);
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        setUser(data.user);
-        return data.user;
+        setError('');
+        try {
+            const data = await loginUser(email, password);
+            // data.user contains the payload
+            setUser(data.user);
+            setLoginStatus(true);
+            return data.user;
+        } catch (err) {
+            console.error("Login failed:", err);
+            const msg = err.response?.data?.msg || err.message || 'Login failed';
+            setError(msg);
+            setLoginStatus(false);
+            throw err; // Re-throw so Login component can handle UI feedack if needed
+        }
     };
 
     const logout = async () => {
         try {
             if (user && user.role === 'instructor') {
-                // Set status to offline before clearing token
-                // We don't await strictly for UI response, but good to try-catch
-                await import('../api/instructors').then(module =>
-                    module.updateInstructorStatus('offline')
+                // Best effort to mark offline
+                import('../api/instructors').then(module =>
+                    module.updateInstructorStatus('offline').catch(() => { })
                 );
             }
+            await logoutUser(); // Calls /api/auth/logout
         } catch (err) {
-            console.error("Failed to update status on logout:", err);
+            console.error("Logout error:", err);
+        } finally {
+            setUser(null);
+            setLoginStatus(false);
+            setError('');
+            // Optional: Force reload to clear any memory states
+            window.location.href = '/';
         }
-
-        logoutUser();
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        window.location.href = '/';
     };
 
     const updateProfile = (updates) => {
-        setUser(prev => {
-            const updated = { ...prev, ...updates };
-            localStorage.setItem('user', JSON.stringify(updated));
-            return updated;
-        });
+        setUser(prev => ({ ...prev, ...updates }));
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, updateProfile, loading }}>
-            {!loading && children}
+        <UserContext.Provider value={{ user, loginStatus, error, login, logout, updateProfile, loading }}>
+            {children}
         </UserContext.Provider>
     );
 };

@@ -49,7 +49,7 @@ const RequestSessionModal = ({ isOpen, onClose, doubt }) => {
 
     // Socket.io for Real-time Updates
     useEffect(() => {
-        const socket = io(import.meta.env.VITE_API_BASE_URL); // Make sure this matches backend port
+        const socket = io(import.meta.env.VITE_API_BASE_URL, { withCredentials: true });
 
         socket.on('instructor-status-change', ({ instructorId, status, name, domain }) => {
             // If the modal is open and a subject is selected, re-fetch the list
