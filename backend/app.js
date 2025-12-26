@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const path = require('path');
 
 const authRoutes = require('./API/routes/authRoutes');
 const doubtRoutes = require('./API/routes/doubtRoutes');
