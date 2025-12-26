@@ -12,7 +12,7 @@ const instructorRoutes = require('./API/routes/instructorRoutes');
 const commentRoutes = require('./API/routes/commentRoutes');
 const roadmapRoutes = require('./API/routes/roadmapRoutes');
 
-const MongoStore = require('connect-mongo');
+const {MongoStore} = require('connect-mongo');
 
 const app = express();
 
