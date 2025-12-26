@@ -258,17 +258,17 @@ flowchart TD
 #### Backend (.env)
 ```env
 # Database
-DB_URI=mongodb+srv://username:password@cluster.mongodb.net
+DB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/<dbname>
 DB_NAME=p2p_learning_platform
 
 # Security
-SECRET=your_super_secure_jwt_secret
-SESSION=your_session_secret_key
+SECRET=<your_jwt_secret>
+SESSION=<your_session_secret>
 
 # Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_SECRET_KEY=your_api_secret
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_api_key>
+CLOUDINARY_SECRET_KEY=<your_api_secret>
 
 # Server
 PORT=5000
