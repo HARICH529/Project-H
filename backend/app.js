@@ -41,13 +41,13 @@ if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../Frontend/dist');
   app.use(express.static(frontendPath));
 
-  // SPA fallback - serve index.html for all non-API routes
-  app.get('*', (req, res, next) => {
-    // Skip API routes
-    if (req.path.startsWith('/api/')) {
-      return next();
+  // SPA fallback using middleware instead of route
+  app.use((req, res, next) => {
+    if (!req.path.startsWith('/api/')) {
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    } else {
+      next();
     }
-    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
