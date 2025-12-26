@@ -28,7 +28,11 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: `${process.env.DB_URI}/${process.env.DB_NAME}`, 
+    mongoUrl: (() => {
+      const uri = `${process.env.DB_URI}/${process.env.DB_NAME}`;
+      console.log('Initializing MongoStore with URI:', uri.replace(/\/\/.*@/, '//***@')); // Log masked URI
+      return uri;
+    })(), 
     collectionName: 'sessions',
     ttl: 24 * 60 * 60 // 1 day
   }),
