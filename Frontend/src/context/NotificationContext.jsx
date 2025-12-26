@@ -13,7 +13,7 @@ const NotificationContext = createContext({
 
 export const useNotifications = () => useContext(NotificationContext);
 
-const SOCKET_SERVER_URL = "http://localhost:5000";
+const SOCKET_SERVER_URL = "https://project-h-backend-80qr.onrender.com";
 
 export const NotificationProvider = ({ children }) => {
     const { user } = useUser();

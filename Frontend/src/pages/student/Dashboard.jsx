@@ -80,7 +80,7 @@ const StudentDashboard = () => {
     useEffect(() => {
         let socket;
         import('socket.io-client').then(({ io }) => {
-            socket = io("http://localhost:5000");
+            socket = io("https://project-h-backend-80qr.onrender.com");
 
             socket.on('connect', () => {
                 if (upcomingSession && upcomingSession._id) {

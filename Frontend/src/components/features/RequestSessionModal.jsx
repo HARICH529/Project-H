@@ -49,7 +49,7 @@ const RequestSessionModal = ({ isOpen, onClose, doubt }) => {
 
     // Socket.io for Real-time Updates
     useEffect(() => {
-        const socket = io('http://localhost:5000'); // Make sure this matches backend port
+        const socket = io('https://project-h-backend-80qr.onrender.com'); // Make sure this matches backend port
 
         socket.on('instructor-status-change', ({ instructorId, status, name, domain }) => {
             // If the modal is open and a subject is selected, re-fetch the list

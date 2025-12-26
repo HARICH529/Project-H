@@ -52,7 +52,7 @@ const InstructorDashboard = () => {
         // Socket connection for real-time updates
         let socket;
         import('socket.io-client').then(({ io }) => {
-            socket = io('http://localhost:5000');
+            socket = io('https://project-h-backend-80qr.onrender.com');
 
             socket.on('connect', () => {
                 // Join a room specific to this instructor to receive updates
