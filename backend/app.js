@@ -2,7 +2,6 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const path = require('path');
 
 const authRoutes = require('./API/routes/authRoutes');
 const doubtRoutes = require('./API/routes/doubtRoutes');
@@ -35,20 +34,5 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/instructors', instructorRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
-
-// Frontend Fallback (for production)
-if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../Frontend/dist');
-  app.use(express.static(frontendPath));
-
-  // SPA fallback using middleware instead of route
-  app.use((req, res, next) => {
-    if (!req.path.startsWith('/api/')) {
-      res.sendFile(path.join(frontendPath, 'index.html'));
-    } else {
-      next();
-    }
-  });
-}
 
 module.exports = app;
