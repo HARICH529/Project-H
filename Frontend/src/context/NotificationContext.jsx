@@ -32,9 +32,15 @@ export const NotificationProvider = ({ children }) => {
         const loadNotifications = async () => {
             try {
                 const data = await fetchNotifications();
-                setNotifications(data);
+                if (Array.isArray(data)) {
+                    setNotifications(data);
+                } else {
+                    console.error("Notifications data is not an array:", data);
+                    setNotifications([]);
+                }
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
+                setNotifications([]);
             } finally {
                 setLoading(false);
             }
@@ -57,7 +63,7 @@ export const NotificationProvider = ({ children }) => {
         newSocket.on('new-notification', (notification) => {
             console.log("New notification received:", notification);
             // Add to top of list
-            setNotifications(prev => [notification, ...prev]);
+            setNotifications(prev => Array.isArray(prev) ? [notification, ...prev] : [notification]);
 
             // Optional: Play sound or show toast
         });
@@ -73,7 +79,7 @@ export const NotificationProvider = ({ children }) => {
     const markAsRead = async (id) => {
         try {
             await apiMarkAsRead(id);
-            setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
+            setNotifications(prev => Array.isArray(prev) ? prev.map(n => n._id === id ? { ...n, isRead: true } : n) : []);
         } catch (err) {
             console.error("Failed to mark as read", err);
         }
@@ -82,13 +88,13 @@ export const NotificationProvider = ({ children }) => {
     const markAllAsRead = async () => {
         try {
             await apiMarkAllAsRead();
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+            setNotifications(prev => Array.isArray(prev) ? prev.map(n => ({ ...n, isRead: true })) : []);
         } catch (err) {
             console.error("Failed to mark all as read", err);
         }
     };
 
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const unreadCount = Array.isArray(notifications) ? notifications.filter(n => !n.isRead).length : 0;
 
     return (
         <NotificationContext.Provider value={{ notifications, unreadCount, markAsRead, markAllAsRead, loading }}>

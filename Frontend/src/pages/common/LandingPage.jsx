@@ -30,6 +30,7 @@ const LandingPage = () => {
             {/* Navbar */}
             <nav className="landing-nav">
                 <Link to="/" className="landing-logo">
+                    <img src="/logo.png" alt="Clarify Logo" className="logo-icon" />
                     <span>Clarify</span>
                 </Link>
                 <div className="nav-links">

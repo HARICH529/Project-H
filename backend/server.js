@@ -13,8 +13,9 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: [CLIENT_URL, "http://localhost:5173", "https://project-h-frontend.onrender.com", "*"], // Allow both local and prod
-    methods: ["GET", "POST"]
+    origin: [CLIENT_URL, "http://localhost:5173", "https://project-h-frontend.onrender.com"],
+    methods: ["GET", "POST"],
+    credentials: true,
   }
 });
 
