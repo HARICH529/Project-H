@@ -91,7 +91,7 @@ const Navbar = ({ role = 'student' }) => {
             <div className="container navbar-container">
                 {/* Logo */}
                 <Link to={`/${role}`} className="navbar-logo">
-                    <div className="logo-icon">C</div>
+                    <img src="/logo.png" alt="Clarify" className="logo-icon" />
                     <span className="logo-text">Clarify</span>
                 </Link>
 

@@ -71,7 +71,7 @@ const StudentDashboard = () => {
         { label: 'Doubts Asked', value: totalDoubts, icon: HelpCircle, color: '#8b5cf6' }, // Use totalDoubts
         { label: 'Sessions Attended', value: user?.sessionsAttended || 0, icon: Video, color: '#a855f7' },
         { label: 'Roadmap Progress', value: '45%', icon: BookOpen, color: '#eab308' },
-        { label: 'Avg Instructor Rating', value: '4.8', icon: Star, color: '#A78BFA' },
+
     ];
 
     // ...

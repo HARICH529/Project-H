@@ -37,5 +37,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/instructors', instructorRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
+app.use('/api/notifications', require('./API/routes/notificationRoutes'));
 
 module.exports = app;
