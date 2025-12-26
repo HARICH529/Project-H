@@ -17,7 +17,10 @@ const MongoStore = require('connect-mongo');
 const app = express();
 
 // Middleware
-app.use(cors({ credentials: true, origin: ['http://localhost:5173', 'https://project-h-frontend.onrender.com', process.env.CLIENT_URL || ''] }));
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:5173', 'https://project-h-frontend.onrender.com', process.env.CLIENT_URL].filter(Boolean)
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(session({

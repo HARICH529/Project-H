@@ -54,7 +54,7 @@ The **Clarify** is a modern, full-stack web application that facilitates peer-to
 - **📊 Progress Dashboard** with session analytics.
 
 ### 👨‍🏫 Instructor Features
-- **📋 Professional Registration** with resume verification.
+- **📋 Instant Professional Registration** and onboarding.
 - **👤 Rich Profile Management** with bio, experience, and domains.
 - **📬 Request Management** with accept/reject functionality.
 - **🎥 Live Session Hosting** with advanced controls.
@@ -156,11 +156,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[📝 Instructor Registration] --> B[📄 Upload Resume & Documents]
-    B --> C[⏳ Admin Verification Process]
-    C --> D{✅ Verification Result}
-    
-    D -->|Approved| E[🎉 Account Activated]
-    D -->|Rejected| F[❌ Registration Denied]
+    B --> E[🎉 Account Activated]
     
     E --> G[🏠 Instructor Dashboard]
     G --> H{Daily Activities}
@@ -189,16 +185,9 @@ flowchart TD
     A[👨💼 Admin Login] --> B[🏠 Admin Dashboard]
     B --> C{Administrative Tasks}
     
-    C -->|👨🏫 Verify Instructors| D[📋 Pending Verifications]
     C -->|🛡️ Moderate Content| E[🚨 Review Reports]
     C -->|👥 Manage Users| F[👤 User Administration]
     C -->|📊 View Analytics| G[📈 Platform Statistics]
-    
-    D --> H[📄 Review Instructor Profile]
-    H --> I[📋 Check Resume & Credentials]
-    I --> J{Verification Decision}
-    J -->|✅ Approve| K[✅ Send Approval Email]
-    J -->|❌ Reject| L[❌ Send Rejection with Reason]
     
     E --> M[🔍 Review Reported Content]
     M --> N[👀 Analyze Violation Reports]
@@ -392,7 +381,6 @@ const instructorFeatures = {
 ### 👨‍💼 Admin Capabilities
 ```javascript
 const adminFeatures = {
-  verification: ["instructor_approval", "document_review", "credential_check"],
   moderation: ["content_review", "report_handling", "user_management"],
   analytics: ["platform_stats", "usage_metrics", "performance_data"],
   system: ["user_roles", "platform_settings", "maintenance_tools"]
@@ -449,7 +437,6 @@ PUT    /api/roadmaps/progress      # Update milestone progress
 ### 👨‍💼 Admin Operations
 ```http
 GET    /api/admin/users            # Get all users
-PUT    /api/admin/verify/:id       # Verify instructor
 GET    /api/admin/reports          # Get content reports
 PUT    /api/admin/moderate/:id     # Moderate content
 ```
