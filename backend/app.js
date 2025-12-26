@@ -36,4 +36,16 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
 app.use('/api/notifications', require('./API/routes/notificationRoutes'));
 
+
+
+
+// Frontend Fallback (for production)
+const frontendPath = path.join(__dirname, '../Frontend/dist');
+app.use(express.static(frontendPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+
 module.exports = app;
