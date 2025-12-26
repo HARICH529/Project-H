@@ -12,6 +12,8 @@ const instructorRoutes = require('./API/routes/instructorRoutes');
 const commentRoutes = require('./API/routes/commentRoutes');
 const roadmapRoutes = require('./API/routes/roadmapRoutes');
 
+const MongoStore = require('connect-mongo');
+
 const app = express();
 
 // Middleware
@@ -22,7 +24,12 @@ app.use(session({
   secret: process.env.SESSION,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  store: MongoStore.create({
+    mongoUrl: `${process.env.DB_URI}/${process.env.DB_NAME}`, 
+    collectionName: 'sessions',
+    ttl: 24 * 60 * 60 // 1 day
+  }),
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Set secure: true in production if https is enabled
 }));
 
 // Routes
