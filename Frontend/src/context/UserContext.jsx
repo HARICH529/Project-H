@@ -13,7 +13,7 @@ export const useUser = () => useContext(UserContext);
 
 import { io } from 'socket.io-client';
 
-const SOCKET_SERVER_URL = "https://project-h-backend-80qr.onrender.com";
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);

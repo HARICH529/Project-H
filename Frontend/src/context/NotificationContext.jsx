@@ -13,7 +13,7 @@ const NotificationContext = createContext({
 
 export const useNotifications = () => useContext(NotificationContext);
 
-const SOCKET_SERVER_URL = "https://project-h-backend-80qr.onrender.com";
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const NotificationProvider = ({ children }) => {
     const { user } = useUser();

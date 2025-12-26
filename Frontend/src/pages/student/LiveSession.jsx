@@ -10,8 +10,8 @@ import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import './LiveSession.css';
 
-const SOCKET_SERVER_URL = "https://project-h-backend-80qr.onrender.com";
-const API_URL = "https://project-h-backend-80qr.onrender.com/api";
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 const LiveSession = () => {
     const { user } = useUser();

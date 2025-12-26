@@ -80,7 +80,7 @@ const StudentDashboard = () => {
     useEffect(() => {
         let socket;
         import('socket.io-client').then(({ io }) => {
-            socket = io("https://project-h-backend-80qr.onrender.com");
+            socket = io(import.meta.env.VITE_API_BASE_URL);
 
             socket.on('connect', () => {
                 if (upcomingSession && upcomingSession._id) {

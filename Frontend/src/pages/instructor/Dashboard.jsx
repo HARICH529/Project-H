@@ -52,7 +52,7 @@ const InstructorDashboard = () => {
         // Socket connection for real-time updates
         let socket;
         import('socket.io-client').then(({ io }) => {
-            socket = io('https://project-h-backend-80qr.onrender.com');
+            socket = io(import.meta.env.VITE_API_BASE_URL);
 
             socket.on('connect', () => {
                 // Join a room specific to this instructor to receive updates
