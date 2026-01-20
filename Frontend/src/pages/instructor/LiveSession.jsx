@@ -472,8 +472,14 @@ const InstructorLiveSession = () => {
     }, [isVideoOff]);
 
     useEffect(() => {
+        console.log("[InstructorLiveSession] Remote stream updated:", remoteStream ? `Stream ID: ${remoteStream.id}, Tracks: ${remoteStream.getTracks().length}` : "null");
+
         if (remoteVideoRef.current && remoteStream) {
             remoteVideoRef.current.srcObject = remoteStream;
+            remoteVideoRef.current.play().catch(e => {
+                console.error("[InstructorLiveSession] Error playing remote video:", e);
+                setMediaError("Autoplay blocked: Click anywhere to enable video.");
+            });
         }
     }, [remoteStream]);
 

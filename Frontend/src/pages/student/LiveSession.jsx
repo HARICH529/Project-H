@@ -297,6 +297,11 @@ const LiveSession = () => {
                 };
 
                 // Socket Event Listeners
+                socketRef.current.on('connect_error', (err) => {
+                    console.error("[LiveSession] Socket connection error:", err);
+                    setMediaError(`Connection failed: ${err.message}`);
+                });
+
                 socketRef.current.on('connect', () => {
                     console.log("Connected to socket server");
                     socketRef.current.emit('join-room', roomId, 'user-' + Math.floor(Math.random() * 10000));
@@ -474,11 +479,24 @@ const LiveSession = () => {
         }
     }, [isVideoOff]);
 
+    // Debugging: Log remote stream changes
     useEffect(() => {
+        console.log("[LiveSession] Remote stream updated:", remoteStream ? `Stream ID: ${remoteStream.id}, Tracks: ${remoteStream.getTracks().length}` : "null");
+
         if (remoteVideoRef.current && remoteStream) {
             remoteVideoRef.current.srcObject = remoteStream;
+            // Explicitly attempt to play to catch Autoplay errors
+            remoteVideoRef.current.play().catch(e => {
+                console.error("[LiveSession] Error playing remote video:", e);
+                setMediaError("Autoplay blocked: Click anywhere to enable video.");
+            });
         }
     }, [remoteStream]);
+
+    // ... inside socket setup ...
+    // Note: I cannot easily inject inside the big useEffect without replace_file code that matches specific blocks.
+    // I will target the socket event listeners specifically if I can, or use the logging effect above.
+    // To debugging signaling, I'll rely on the existing console.logs but ensure they are verbose enough.
 
     // Toggle Mute
     // Toggle Mute

@@ -12,7 +12,7 @@ const instructorRoutes = require('./API/routes/instructorRoutes');
 const commentRoutes = require('./API/routes/commentRoutes');
 const roadmapRoutes = require('./API/routes/roadmapRoutes');
 
-const {MongoStore} = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 
 const app = express();
 
@@ -33,14 +33,14 @@ app.use(session({
       const uri = `${process.env.DB_URI}/${process.env.DB_NAME}`;
       console.log('Initializing MongoStore with URI:', uri.replace(/\/\/.*@/, '//***@')); // Log masked URI
       return uri;
-    })(), 
+    })(),
     collectionName: 'sessions',
     ttl: 24 * 60 * 60 // 1 day
   }),
-  cookie: { 
+  cookie: {
     secure: true, // MUST be true for SameSite: 'none'
     sameSite: 'none', // Required for cross-site (frontend != backend domain)
-    maxAge: 24 * 60 * 60 * 1000 
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
