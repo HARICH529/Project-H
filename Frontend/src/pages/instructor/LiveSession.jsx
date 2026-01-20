@@ -358,7 +358,10 @@ const InstructorLiveSession = () => {
 
                     const pc = createPeerConnection();
                     try {
-                        const offer = await pc.createOffer();
+                        const offer = await pc.createOffer({
+                            offerToReceiveAudio: true,
+                            offerToReceiveVideo: true
+                        });
                         await pc.setLocalDescription(offer);
                         socketRef.current.emit('offer', {
                             roomId,
