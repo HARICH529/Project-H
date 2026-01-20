@@ -43,6 +43,10 @@ const submitFeedback = async (req, res) => {
 
     res.status(201).json(feedback);
   } catch (error) {
+    console.error("Feedback Submission Error:", error);
+    if (error.code === 11000) {
+      return res.status(400).json({ msg: 'You have already submitted feedback for this session.' });
+    }
     res.status(500).json({ msg: error.message });
   }
 };
