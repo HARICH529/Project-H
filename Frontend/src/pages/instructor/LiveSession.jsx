@@ -315,6 +315,8 @@ const InstructorLiveSession = () => {
                         peerConnectionRef.current.close();
                         peerConnectionRef.current = null;
                         setRemoteStream(null);
+                        isRemoteDescriptionSet = false;
+                        candidateQueue.length = 0;
                     }
                     // Wait for request-offer from student to avoid glare
                 });
@@ -341,6 +343,9 @@ const InstructorLiveSession = () => {
                         peerConnectionRef.current = null;
                         setRemoteStream(null);
                     }
+
+                    isRemoteDescriptionSet = false;
+                    candidateQueue.length = 0;
 
                     const pc = createPeerConnection();
                     try {

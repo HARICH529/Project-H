@@ -324,6 +324,8 @@ const LiveSession = () => {
                         peerConnectionRef.current.close();
                         peerConnectionRef.current = null;
                         setRemoteStream(null); // Clear video
+                        isRemoteDescriptionSet = false;
+                        candidateQueue.length = 0;
                     }
 
                     // Instead of offering, request the instructor to offer
@@ -340,10 +342,6 @@ const LiveSession = () => {
                         state: {
                             sessionId,
                             instructorId: sessionDetails?.instructorId?._id || sessionDetails?.instructorId || sessionDetails?.instructorId?._id
-                            // Note: sessionDetails captured in closure might be stale if not in ref.
-                            // But usually sessionDetails is set early.
-                            // Better approach: use a ref for sessionDetails if needed, or rely on internal state if IDs available.
-                            // However, sessionId is available from scope. instructorId might betricky.
                         }
                     });
                 });
@@ -364,6 +362,9 @@ const LiveSession = () => {
                         peerConnectionRef.current.close();
                         peerConnectionRef.current = null;
                     }
+
+                    isRemoteDescriptionSet = false;
+                    candidateQueue.length = 0;
 
                     const pc = createPeerConnection(); // This will create a NEW one now that ref is null
 
