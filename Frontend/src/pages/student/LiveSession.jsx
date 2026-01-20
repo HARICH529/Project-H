@@ -266,6 +266,11 @@ const LiveSession = () => {
                         });
                     }
 
+                    pc.oniceconnectionstatechange = () => {
+                        console.log("ICE Connection State:", pc.iceConnectionState);
+                        setConnectionStatus(pc.iceConnectionState);
+                    };
+
                     peerConnectionRef.current = pc;
                     return pc;
                 };
@@ -726,6 +731,9 @@ const LiveSession = () => {
         return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Connection Status Debugging
+    const [connectionStatus, setConnectionStatus] = useState('initializing');
+
     return (
         <div className="session-container" ref={containerRef}>
             {/* Main Video Area */}
@@ -738,6 +746,16 @@ const LiveSession = () => {
                         </div>
                         <div className="session-timer">
                             {formatTime(seconds)}
+                        </div>
+                        <div className="connection-status" style={{
+                            background: connectionStatus === 'connected' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            color: 'white',
+                            marginLeft: '8px'
+                        }}>
+                            Status: {connectionStatus}
                         </div>
                     </div>
 
