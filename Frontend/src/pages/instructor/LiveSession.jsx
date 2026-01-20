@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import api from '../../api/client';
 import { useUser } from '../../context/UserContext';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Maximize2, Minimize2, MoreVertical, Send, Monitor, PenTool, X } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Maximize2, Minimize2, MoreVertical, Send, Monitor, PenTool, X, RefreshCw } from 'lucide-react';
 import { useAlert } from '../../context/AlertContext';
 import { updateSessionRequest } from '../../api/sessionRequests';
 import Button from '../../components/ui/Button';
@@ -273,6 +273,10 @@ const InstructorLiveSession = () => {
                     const pc = new RTCPeerConnection({
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:stun3.l.google.com:19302' },
+                            { urls: 'stun:stun4.l.google.com:19302' },
                             { urls: 'stun:global.stun.twilio.com:3478' }
                         ]
                     });
@@ -601,6 +605,25 @@ const InstructorLiveSession = () => {
         }
     };
 
+    const handleReconnect = () => {
+        console.log("Manual Reconnect Triggered");
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
+            peerConnectionRef.current = null;
+        }
+        setRemoteStream(null);
+        setConnectionStatus('reconnecting');
+
+        // Request offer again (acts as restart)
+        if (socketRef.current) {
+            socketRef.current.emit('request-offer', {
+                roomId,
+                userId: socketRef.current.id,
+                studentName: studentName || 'Student'
+            });
+        }
+    };
+
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -854,6 +877,15 @@ const InstructorLiveSession = () => {
                         onClick={toggleVideo}
                     >
                         {(isVideoOff && !isScreenSharing) ? <VideoOff size={20} /> : <Video size={20} />}
+                    </Button>
+
+                    <Button
+                        variant="secondary"
+                        className="control-btn"
+                        onClick={handleReconnect}
+                        title="Reconnect (Fix Frozen/Black Video)"
+                    >
+                        <RefreshCw size={20} />
                     </Button>
 
                     <Button

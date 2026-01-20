@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import api from '../../api/client';
 import { useUser } from '../../context/UserContext';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Maximize2, Minimize2, MoreVertical, Send, Monitor, Smile, X } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, Maximize2, Minimize2, MoreVertical, Send, Monitor, Smile, X, RefreshCw } from 'lucide-react';
 import { useAlert } from '../../context/AlertContext';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
@@ -241,6 +241,10 @@ const LiveSession = () => {
                     const pc = new RTCPeerConnection({
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:stun3.l.google.com:19302' },
+                            { urls: 'stun:stun4.l.google.com:19302' },
                             { urls: 'stun:global.stun.twilio.com:3478' }
                         ]
                     });
@@ -597,6 +601,25 @@ const LiveSession = () => {
         }
     };
 
+    const handleReconnect = () => {
+        console.log("Manual Reconnect Triggered");
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
+            peerConnectionRef.current = null;
+        }
+        setRemoteStream(null);
+        setConnectionStatus('reconnecting');
+
+        // Re-initiate connection
+        if (socketRef.current) {
+            socketRef.current.emit('request-offer', {
+                roomId,
+                userId: socketRef.current.id,
+                studentName: userRef.current?.name || 'Student'
+            });
+        }
+    };
+
     const REACTIONS = ['👍', '❤️', '👏', '🎉', '😂', '😮'];
 
     // Timer Logic (Server Synced)
@@ -869,6 +892,15 @@ const LiveSession = () => {
                         onClick={toggleVideo}
                     >
                         {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
+                    </Button>
+
+                    <Button
+                        variant="secondary"
+                        className="control-btn"
+                        onClick={handleReconnect}
+                        title="Reconnect (Fix Frozen/Black Video)"
+                    >
+                        <RefreshCw size={20} />
                     </Button>
 
                     <Button
