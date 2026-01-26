@@ -318,6 +318,7 @@ const InstructorLiveSession = () => {
 
                 socketRef.current.on('user-connected', (userId) => {
                     console.log("User connected:", userId);
+                    if (userId.startsWith('observer-')) return;
                     // Hard Reset: Use this opportunity to clear any stale state
                     if (peerConnectionRef.current) {
                         console.log("Closing existing peer connection due to user-connected event");
