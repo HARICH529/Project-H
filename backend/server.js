@@ -46,9 +46,11 @@ io.on('connection', (socket) => {
     console.log(`User ${userId} joined room ${roomId}`);
 
     // Timer Logic: Add Participant
+    // Timer Logic: Add Participant
+    const timer = getRoomTimer(roomId);
+
     // Ignore observers for timer logic
     if (!userId.startsWith('observer-')) {
-      const timer = getRoomTimer(roomId);
       timer.participants.add(socket.id);
 
       // If we have >= 2 people and timer was stopped, RESUME
@@ -56,10 +58,6 @@ io.on('connection', (socket) => {
         timer.lastResume = Date.now();
         console.log(`[Timer] Resumed for room ${roomId} at ${timer.lastResume}`);
       }
-    }
-    if (timer.participants.size >= 2 && !timer.lastResume) {
-      timer.lastResume = Date.now();
-      console.log(`[Timer] Resumed for room ${roomId} at ${timer.lastResume}`);
     }
 
     // Emit current timer state to EVERYONE in room (sync)
